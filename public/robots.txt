@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://node-snapdrop.onrender.com/sitemap.xml
+Sitemap: https://dropfile-26f2.onrender.com/sitemap.xml

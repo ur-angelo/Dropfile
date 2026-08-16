@@ -1,7 +1,7 @@
 {
-  "name": "file-transfer",
+  "name": "Dropfile",
   "version": "1.0.0",
-  "description": "file transfer",
+  "description": "Dropfile",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

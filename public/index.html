@@ -4,27 +4,22 @@
     document.addEventListener("contextmenu", function (e) {
         e.preventDefault();
     });
-
     document.addEventListener("selectstart", function (e) {
         e.preventDefault();
     });
-
     document.addEventListener("dragstart", function (e) {
         e.preventDefault();
     });
-
     document.addEventListener("wheel", function (e) {
         if (e.ctrlKey) {
             e.preventDefault();
         }
     }, { passive: false });
-
     document.addEventListener("touchmove", function (e) {
         if (e.touches.length > 1) {
             e.preventDefault();
         }
     }, { passive: false });
-
     let lastTouchEnd = 0;
     document.addEventListener("touchend", function (e) {
         const now = Date.now();
@@ -33,7 +28,6 @@
         }
         lastTouchEnd = now;
     }, { passive: false });
-
     document.addEventListener("keydown", function (e) {
         const key = e.key.toLowerCase();
 
@@ -41,28 +35,23 @@
             e.preventDefault();
             return;
         }
-
         if (e.key === "F12") {
             e.preventDefault();
             return;
         }
-
         if (e.ctrlKey && e.shiftKey && ["i", "c", "j", "k"].includes(key)) {
             e.preventDefault();
             return;
         }
-
         if (e.ctrlKey && ["u", "s"].includes(key)) {
             e.preventDefault();
         }
     });
-
     document.addEventListener("mousedown", function (e) {
         if (e.button === 2) {
             e.preventDefault();
         }
     });
-
     const style = document.createElement("style");
     style.innerHTML = `
         * {
@@ -84,7 +73,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Ang Transfer</title>
+    <title>Drop file</title>
+    <meta name="description"content="DropFile is a fast peer-to-peer file transfer tool. Send files directly between PC, iPhone and other devices.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DropFile">
+    <meta property="og:title"content="DropFile - Fast File Transfer">
+    <meta property="og:description"content="Send files directly between your devices with fast peer-to-peer file transfer.">
+    <meta property="og:image"content="https://dropfile-26f2.onrender.com/assets/icon.png">
+    <meta property="og:image:width"content="1200">
+    <meta property="og:image:height"content="630">
+    <meta property="og:url"content="https://dropfile-26f2.onrender.com/">
+    <link rel="icon"type="image/png"href="/icon.png">
     <link href="assets/icon.png" rel="shortcut icon" type="image/x-icon"/>
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
@@ -103,7 +102,7 @@
             <div class="brand-icon"><img src="assets/logo.png" alt="Logo"></div>
             <div>
                 <h1>.gg/<span>Ang 𓂀</span></h1>
-                <p>File transfer</p>
+                <p>Drop file</p>
             </div>
         </div>
 
@@ -226,7 +225,7 @@
     <footer>
         <span>© 2026 .gg/Ang 𓂀</span>
         <span>•</span>
-        <span>File transfer</span>
+        <span>Drop file</span>
     </footer>
 
 </main>
