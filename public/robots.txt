@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://node-snapdrop.onrender.com/sitemap.xml

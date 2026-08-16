@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<script>
+(function () {
+    document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener("selectstart", function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener("dragstart", function (e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener("wheel", function (e) {
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener("touchmove", function (e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    let lastTouchEnd = 0;
+    document.addEventListener("touchend", function (e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    document.addEventListener("keydown", function (e) {
+        const key = e.key.toLowerCase();
+
+        if (e.ctrlKey && ["+", "-", "=", "0"].includes(e.key)) {
+            e.preventDefault();
+            return;
+        }
+
+        if (e.key === "F12") {
+            e.preventDefault();
+            return;
+        }
+
+        if (e.ctrlKey && e.shiftKey && ["i", "c", "j", "k"].includes(key)) {
+            e.preventDefault();
+            return;
+        }
+
+        if (e.ctrlKey && ["u", "s"].includes(key)) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener("mousedown", function (e) {
+        if (e.button === 2) {
+            e.preventDefault();
+        }
+    });
+
+    const style = document.createElement("style");
+    style.innerHTML = `
+        * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -webkit-user-drag: none !important;
+        }
+        img,
+        a {
+            -webkit-user-drag: none !important;
+            user-drag: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+})();
+</script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ang Transfer</title>
+    <link href="assets/icon.png" rel="shortcut icon" type="image/x-icon"/>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<main class="app">
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon"><img src="assets/logo.png" alt="Logo"></div>
+            <div>
+                <h1>.gg/<span>Ang 𓂀</span></h1>
+                <p>File transfer</p>
+            </div>
+        </div>
+
+        <div id="connectionBadge" class="badge waiting">
+            <i></i>
+            <span>Waiting</span>
+        </div>
+    </header>
+
+    <section class="dashboard">
+
+        <div id="connectionCard" class="card connection-card">
+            <div class="card-title">
+                <div>
+                    <span class="small-title">CONNECTION</span>
+                    <h2>Connect your device</h2>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+
+            <div class="connection-tabs">
+                <button id="tabQrBtn" class="tab-btn active">Scan QR Code</button>
+                <button id="tabCodeBtn" class="tab-btn">Enter Room Code</button>
+            </div>
+
+            <div id="qrMode" class="connect-mode">
+                <p class="description">Scan the QR code with your phone camera to connect.</p>
+                <div class="qr-wrapper">
+                    <div id="qrcode"></div>
+                </div>
+
+                <div class="room">
+                    <div>
+                        <span>YOUR ROOM CODE</span>
+                        <strong id="roomCode">------</strong>
+                    </div>
+                    <button id="copyCodeBtn" class="secondary-btn">Copy</button>
+                </div>
+            </div>
+
+            <div id="codeMode" class="connect-mode hidden">
+                <p class="description">Enter the 6-character room code from the other device:</p>
+                <div class="join-box">
+                    <input type="text" id="joinRoomInput" placeholder="e.g. X7K82P" maxlength="6">
+                    <button id="joinRoomBtn">JOIN</button>
+                </div>
+            </div>
+
+            <div class="connection-state">
+                <span id="status">Waiting for device...</span>
+            </div>
+        </div>
+
+        <div id="transferCard" class="card transfer-card hidden">
+            <div class="card-title">
+                <div>
+                    <span class="small-title">TRANSFER</span>
+                    <h2>Send a file</h2>
+                </div>
+                <div class="transfer-icon">↑</div>
+            </div>
+
+            <label id="dropArea" class="drop-area">
+                <div class="drop-icon">↑</div>
+                <h3>Drop your file here</h3>
+                <p>or click to browse your device</p>
+                <span class="browse">Select File</span>
+                <input id="fileInput" type="file">
+            </label>
+
+            <div id="selectedFile" class="file-card hidden">
+                <div class="file-type">FILE</div>
+                <div class="file-info">
+                    <strong id="fileName">file</strong>
+                    <span id="fileSize">0 MB</span>
+                </div>
+                <button id="sendButton">SEND</button>
+            </div>
+        </div>
+
+        <div id="progressCard" class="card progress-card hidden">
+            <div class="transfer-header">
+                <div>
+                    <span class="small-title" id="transferLabel">TRANSFERRING</span>
+                    <h2 id="transferFileName">file</h2>
+                </div>
+                <div id="percentage">0%</div>
+            </div>
+
+            <div class="progress-track">
+                <div id="progress" class="progress-fill"></div>
+            </div>
+
+            <div class="progress-numbers">
+                <div>
+                    <span>TRANSFERRED</span>
+                    <strong id="transferred">0 MB / 0 MB</strong>
+                </div>
+                <div>
+                    <span>SPEED</span>
+                    <strong id="speed">0 MB/s</strong>
+                </div>
+                <div>
+                    <span>TIME LEFT</span>
+                    <strong id="time">--</strong>
+                </div>
+            </div>
+        </div>
+
+        <div id="receivedCard" class="card received-card hidden">
+            <div class="success-icon">✓</div>
+            <span class="small-title">TRANSFER COMPLETE</span>
+            <h2>File received</h2>
+            <p id="receivedFileName">file</p>
+            <button id="downloadButton" class="download-button">SAVE FILE</button>
+        </div>
+
+    </section>
+
+    <footer>
+        <span>© 2026 .gg/Ang 𓂀</span>
+        <span>•</span>
+        <span>File transfer</span>
+    </footer>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

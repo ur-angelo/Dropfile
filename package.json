@@ -1,0 +1,17 @@
+{
+  "name": "file-transfer",
+  "version": "1.0.0",
+  "description": "file transfer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
